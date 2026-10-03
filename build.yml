@@ -1,0 +1,40 @@
+name: Build Windows EXE
+
+on:
+  workflow_dispatch: # 讓您可以在網頁上點擊「Run workflow」手動觸發打包
+
+jobs:
+  build:
+    runs-on: windows-latest # 租用 GitHub 免費的雲端 Windows 伺服器來打包
+
+    steps:
+    - name: 1. 複製專案程式碼
+      uses: actions/checkout@v4
+
+    - name: 2. 安裝 Python 環境
+      uses: actions/setup-python@v5
+      with:
+        python-version: '3.10' # 這裡可以改成您習慣的 Python 版本
+
+    - name: 3. 安裝打包必備套件
+      run: |
+        python -m pip install --upgrade pip
+        pip install pyinstaller
+        # 如果您的程式有用到其他套件（例如 requests, pandas），請在下方手動加上：
+        # pip install requests pandas
+
+    - name: 4. 執行 PyInstaller 打包 (包含多檔案 Add Data)
+      run: |
+        # ⚠️ 請根據您的檔案名稱修改下方的參數：
+        # -F 代表打包成單一 EXE 檔
+        # --add-data "來源檔案;打包後的目標目錄" (Windows 環境下使用分號 ;)
+        pyinstaller -F main.py --add-data "config.json;."
+        
+        # 💡 如果您還有其他資料夾要加入，可以參考下方格式（把前面的 # 拿掉）：
+        # pyinstaller -F main.py --add-data "config.json;." --add-data "images/*;images"
+
+    - name: 5. 將打包好的 EXE 檔案上傳至網頁
+      uses: actions/upload-artifact@v4
+      with:
+        name: Windows-EXE-Package # 下載時顯示的壓縮檔名稱
+        path: dist/*.exe # 將產出的 dist 資料夾內所有 exe 檔打包上傳
