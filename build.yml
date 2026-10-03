@@ -25,13 +25,7 @@ jobs:
 
     - name: 4. 執行 PyInstaller 打包 (包含多檔案 Add Data)
       run: |
-        # ⚠️ 請根據您的檔案名稱修改下方的參數：
-        # -F 代表打包成單一 EXE 檔
-        # --add-data "來源檔案;打包後的目標目錄" (Windows 環境下使用分號 ;)
-        pyinstaller -F main.py --add-data "config.json;."
-        
-        # 💡 如果您還有其他資料夾要加入，可以參考下方格式（把前面的 # 拿掉）：
-        # pyinstaller -F main.py --add-data "config.json;." --add-data "images/*;images"
+        pyinstaller -F main.py --add-data "config.json;." --add-data "online_viewer_net.html;."
 
     - name: 5. 將打包好的 EXE 檔案上傳至網頁
       uses: actions/upload-artifact@v4
